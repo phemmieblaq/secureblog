@@ -11,16 +11,20 @@ const pool = new Pool({
 });
 
 // Function to test the database connection and set the schema
-const testDBConnection = async (schemaName ) => {
+const testDBConnection = async () => {
+  const client = await pool.connect(); // Attempt to get a client from the connection pool
   try {
-    const client = await pool.connect(); // Get a client from the connection pool
-    await client.query(`SET search_path TO ${schemaName}, public`); // Execute a simple query to set the schema
-    console.log(`Connected to the database`);
-    client.release(); // Release the client back to the pool
+    await client.query('SET search_path TO blog, public'); // Set the schema search path
+    console.log('Connected to the database and search_path set');
   } catch (err) {
-    console.error('Failed to connect to the database', err);
+    console.error('Database connection failed:', err);
+  } finally {
+    client.release(); //  client being released back to the pool
   }
 };
+
+// Call this function on startup to verify connection
+
 
 // Set schema (adjust the schema name as necessary)
 

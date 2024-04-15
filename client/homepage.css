@@ -1,0 +1,126 @@
+html {
+    box-sizing: border-box;
+    font-family: Familjen Grotesk;
+    background-color:  #FAFAFA;
+  }
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+    
+  }
+
+
+body {
+  
+    max-width:100%;
+    width:100%;
+    min-height: 100vh;
+    display:flex;
+    flex-direction: column;
+   
+     overflow-x: hidden;
+    
+   
+}
+
+.header{
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 24px 80px;
+    margin-bottom: 80px;
+    
+    
+}
+.subHeader{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+}
+
+.search {
+   max-width:400px;
+   width:100%;
+    padding-left: 16px;
+    padding-block: 8px;
+   
+    background: #F6F5F5;
+
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:8px;
+    border-radius: 8px;
+  
+   
+  }
+  
+  .search input {
+    flex: 1;
+    border: none;
+    font-size: 15px;
+    
+    font-weight: 400;
+    
+  
+    outline: none;
+    color: #a1a1a1;
+    background: #F6F5F5;
+    
+  }
+  
+  .search img {
+    width: 16px;
+    height:16px;
+    cursor: pointer;
+  }
+  .blogWrapper{
+    display: flex;
+    max-width: 200px;
+    width: 100%;
+   
+    justify-content:space-between;
+    
+    
+    
+  }
+
+  .blogCardContainer{
+    width: 100%;
+    padding-inline: 80px;
+    margin-bottom: 40px;
+   
+
+  }
+  .mainHeading{
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap:16px;
+    margin-bottom: 40px;
+  }
+  .details{
+        font-size: 18px;
+        font-weight: 400;
+        color: #363434;
+  }
+  .blogHeading{
+    color: #1A1A1A;
+    font-size: 44px;
+   
+  }
+  .blogPostCard{
+    width: 100%;
+    display: flex;
+  border:1px solid red;
+  }

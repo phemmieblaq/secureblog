@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="registration.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/21.1.4/js/intlTelInput.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css"
+    crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" crossorigin="anonymous"></script>
+    
+    
+</head>
+<body>
+    <div class="bodylogo">
+        <div class="imageContainer">
+            <img src="./images/logo.svg" alt="">
+                
+        </div>
+
+    <div class="regContainer">
+        <div class="textSignup">
+            <div class="registerSub">
+            <h2 class="register">
+                Create an account
+            </h2>
+        
+        </div>
+
+        
+    <form id="registrationForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <div class="error" id="usernameError"></div>
+
+
+        <label for="tel">Phone Number:</label>
+        <input type="tel" id="tel" name="tel" required>
+        <div class="error" id="telError"></div>
+
+        
+        
+        
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <div class="error" id="emailError"></div>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <div class="error" id="passwordError"></div>
+
+        <!-- Custom CAPTCHA with dynamic question -->
+        <label for="captcha">Solve this problem: <span id="mathQuestion"></span></label>
+        <input type="text" id="captcha" name="captcha" required>
+        <div class="error" id="captchaError"></div>
+
+        <button type="submit">Register</button>
+        <div class="error" id="serverError"></div>
+    </form>
+
+    <div class="altContainer">
+        <p>Already have an account? <a href="login.html">Sign in</a></p>
+    </div>
+</div>
+</div>
+  
+</div>
+<script src="registration.js"></script>
+</body>
+</html>

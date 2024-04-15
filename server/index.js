@@ -1,27 +1,63 @@
 const express = require('express');
 require('dotenv').config();
+const session = require('express-session');
+const cors = require('cors');
+
 
 const { testDBConnection } = require('./src/database');
-const userRoutes = require('./src/routes/userRoutes'); // Ensure this path is correct
-const defaultSchema = 'blog';
-testDBConnection(defaultSchema);
+const userRoutes = require('./src/routes/appRoutes'); // Ensure this path is correct
+
+testDBConnection();
 // Immediately set the schema after establishing the connection pool
 
 
 
 const app = express();
+const corsOptions = {
+  origin: 'http://localhost:8000', // Add other IPs if necessary
+  credentials: true, // To allow sessions and cookies to be sent
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type,Authorization'
+};
+
+app.use(cors(corsOptions));
+
+app.get('/test', cors(corsOptions), (req, res) => {
+  res.json({ message: "Test successful" });
+});
+
 
 
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
+
+
+if (!process.env.SECRET_SESSION_KEY) {
+  throw new Error('SESSION_SECRET is not set');
+}
+
+app.use(session({
+  secret: process.env.SECRET_SESSION_KEY, // Secret key to sign the session cookie
+  resave: false, // Avoids resaving session if nothing changed
+  saveUninitialized: false, // Don't save an uninitialized session
+  cookie: {
+    httpOnly: true,
+    secure: false, // Set to true and add SameSite=None in production if accessed over HTTPS
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+   domain: 'localhost',
+  }
+}));
+
+
+
 app.get('/', (req, res) => {
   res.send('Welcome to the Express Server');
 });
 
 // Use '/signin' as the route prefix for user routes
-app.use('/user', userRoutes);
+app.use('', userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

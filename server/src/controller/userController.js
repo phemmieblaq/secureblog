@@ -2,6 +2,13 @@ const {pool}= require('../database');
 const queries= require('../queries/userQueries');
 const{hasher,matchChecker}= require('../../src/common/hash');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const{transporter}= require('../common/nodeMailer');
+const generateOTP = require('../common/generateOTP');
+
+require('dotenv').config()
+
+
 
 
 
@@ -9,16 +16,33 @@ const jwt = require('jsonwebtoken');
 
 const addUser = async (req, res) => {
     const { username, email, phone, password_hash } = req.body;
-    
+
+
+  
     try {
+        await pool.query('SET search_path TO blog, public');
         // Check if user email is already in the database
         const emailExistsResult = await pool.query(queries.checkEmailExists, [email]);
         console.log(emailExistsResult.rows);
+
+
+        const checkUsernameExists = await pool.query(queries.checkUsernameExists, [username]);
+        //console.log(checkUsernameExists.rows);
+
         
         if (emailExistsResult.rows.length) {
             return res.status(400).json({ error: 'Email already in use' });
             
             
+        }
+        if (checkUsernameExists.rows.length) {
+            return res.status(400).json({ error: 'username already in use' });
+            
+            
+        }
+
+        if (!password_hash) {
+            return res.status(400).json({ error: 'Password is required' });
         }
         // Hash the password
         const cryptedPassword = await hasher(password_hash, 12);
@@ -46,6 +70,7 @@ const getUserById = async (req, res) => {
     const id = parseInt(req.params.id);
     
     try {
+        await pool.query('SET search_path TO blog, public');
         const getUser = await pool.query(queries.getUserById, [id]);
       
 
@@ -74,8 +99,11 @@ const getUserById = async (req, res) => {
 
 
 
+
 let refreshTokens = [];
-function generateAccessToken(user) {
+
+
+const generateAccessToken=(user)=> {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' }); // Adjusted expiresIn to 1h for demonstration
   }
 
@@ -89,59 +117,202 @@ const token =async(req,res)=>{
       res.json({ accessToken: accessToken });
     });
 }
+
+
+
+
+
+
 const logoutUser=async (req, res) => {
+    await pool.query('SET search_path TO blog, public');
     refreshTokens = refreshTokens.filter(token => token !== req.body.token);
     res.sendStatus(204); // No content to send back
   };
+
+
+
+
+
   
 
   const loginUser = async (req, res) => {
     const { email, password_hash } = req.body;
+    let userFound = false;
 
     try {
+        await pool.query('SET search_path TO blog, public');
         const userResult = await pool.query(queries.getUserByEmail, [email]);
-        if (userResult.rows.length === 0) {
-            return res.status(404).json({ error: "User not found" });
+        
+        if (userResult.rows.length > 0) {
+            const user = userResult.rows[0];
+            const passwordMatch = await matchChecker(password_hash, user.password_hash);
+
+            if (passwordMatch) {
+                // User found and password is correct
+                userFound = true;
+                const otp = generateOTP();
+
+                
+                 // Your function to generate a numeric OTP
+
+                try {
+                    await transporter.sendMail({
+                        from: process.env.MAIL_USERNAME,
+                        to: user.email,
+                        subject: 'OTP',
+                        text: `use this one time password to login : ${otp}`
+                    });
+                    console.log('Email sent successfully');
+                } catch (error) {
+                    console.error('Failed to send email:', error);
+                }
+                // Your function to send OTP via email or SMS
+
+                // Store OTP and user details in session or temporary storage
+                req.session.otp = otp;
+                console.log(otp)
+                req.session.user = {
+                    id: user.id,
+                    email: user.email,
+                    phone: user.phone
+                };
+            }
         }
 
-        const user = userResult.rows[0];
-        const passwordMatch = await matchChecker(password_hash, user.password_hash);
-        if (!passwordMatch) {
-            return res.status(401).json({ error: "Invalid credentials" });
-        }
+        // Delay response to mitigate timing attacks
+        setTimeout(() => {
+            if (!userFound) {
+                // Simulate a delay and then send a generic error message
+                res.status(401).json({ error: "Invalid credentials or OTP required" });
+            } else {
+                // Inform the user that the OTP has been sent
+                res.status(200).json({ message: "OTP sent, please verify to complete login." });
+            }
+        }, 1000 + Math.random() * 100);  // Random delay between 1 and 1.1 seconds
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'An error occurred during the login process' });
+    }
+};
 
-        // Generate Access Token
+
+const verifyOTP = async (req, res) => {
+    const { otp } = req.body;
+    console.log('Received OTP:', req.body.otp);
+    console.log('Expected OTP:', req.session.otp);
+
+    if (req.session.otp === otp)
+    {
+       
+        // Generate tokens after successful OTP verification
         const accessToken = jwt.sign(
-            { userId: user.id, email: user.email },
+            { userId: req.session.user.id, email: req.session.user.email },
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: '1h' }
         );
 
-        // Generate Refresh Token
         const refreshToken = jwt.sign(
-            { userId: user.id, email: user.email },
+            { userId: req.session.user.id, email: req.session.user.email },
             process.env.REFRESH_TOKEN_SECRET
         );
 
-        // Store the refresh token
-        refreshTokens.push(refreshToken);
+        // Set the tokens in HttpOnly cookies
+        // Removed 'secure: true' for local development on HTTP
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: false, // Set to true if served over HTTPS
+            maxAge: 3600000 // 1 hour
+        });
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: false, // Set to true if served over HTTPS
+            maxAge: 86400000 // 24 hours
+        });
+
+
+        // Clear the session data
+        req.session.otp = null;
+        req.session.user = null;
 
         res.status(200).json({
             message: "Login successful",
-            data:{
-              
-                    id: user.id,
-                    username: user.username,
-                    email: user.email,
-                    phone: user.phone,
-                    accessToken: accessToken,
-                    refreshToken: refreshToken
-            }
-            
+            accessToken,
+            refreshToken
         });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'An error occurred' });
+    } else {
+        res.status(401).json({ error: "Invalid OTP" });
+    }
+};
+
+
+
+
+
+// Generate and send password reset token
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
+        await pool.query('SET search_path TO blog, public');
+        const userResult = await pool.query(queries.getUserByEmail, [email]);
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        const user = userResult.rows[0];
+        // console.log('userlogin', user);
+
+
+        // Generate a password reset token
+        const token = crypto.randomBytes(20).toString('hex');
+        const expiresAt = new Date(Date.now() + 3600000); // Token expires in 1 hour
+
+        // Save the token in the database
+        await pool.query(queries.createPasswordResetToken, [user.id, token, expiresAt]);
+
+        // Send email with reset link
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+        try {
+            await transporter.sendMail({
+                from: process.env.MAIL_USERNAME,
+                to: user.email,
+                subject: 'Password Reset',
+                text: `To reset your password, please click on this link: ${resetLink}`
+            });
+            console.log('Email sent successfully');
+        } catch (error) {
+            console.error('Failed to send email:', error);
+        }
+        
+
+        res.json({ message: "If an account with that email exists, a password reset link has been sent.",
+                    token: token});
+    } catch (error) {
+        console.log('error:', error);
+        res.status(500).json({ error: error});
+    }
+};
+
+
+const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+    try {
+        await pool.query('SET search_path TO blog, public');
+        // Verify the token
+        const tokenResult = await pool.query(queries.getPasswordResetToken, [token]);
+        if (tokenResult.rows.length === 0) {
+            return res.status(400).json({ error: "Invalid or expired password reset token" });
+        }
+
+        const userId = tokenResult.rows[0].user_id;
+        const hashedPassword = await hasher(newPassword, 12);
+
+        // Update the user's password and delete any password reset tokens
+        await pool.query(queries.updateUserPassword, [hashedPassword, userId]);
+        await pool.query(queries.deleteUserPasswordResetTokens, [userId]);
+
+        res.json({ message: "Your password has been updated successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'An error occurred while trying to reset your password.' });
     }
 };
 
@@ -149,8 +320,11 @@ const logoutUser=async (req, res) => {
 module.exports = {
     addUser,
     getUserById,
+    verifyOTP,
     token,
     logoutUser,
     loginUser,
+    forgotPassword,
+    resetPassword
 };
 

@@ -3,7 +3,8 @@ const {pool}= require('../database');
 
 const postBlog = async (req, res) => {
     const { title, content } = req.body;
-    const userId = req.user.userId; // Assuming the JWT includes userId after authentication
+    const userId = req.user.userId; 
+    console.log(userId)// Assuming the JWT includes userId after authentication
 
     try {
         await pool.query('SET search_path TO blog, public');
@@ -59,7 +60,12 @@ const deleteBlog = async (req, res) => {P
 const getAllBlogs = async (req, res) => {
     try {
         await pool.query('SET search_path TO blog, public');
-        const allBlogs = await pool.query(queries.getAllBlogs);
+        // Adjusted query to use the correct table name 'blog_posts'
+        const allBlogs = await pool.query(`
+            SELECT blog_posts.*, users.username
+            FROM blog_posts
+            JOIN users ON blog_posts.user_id = users.id
+        `);
         res.json(allBlogs.rows);
     } catch (error) {
         console.error(error);
@@ -71,11 +77,15 @@ const getUserBlogs = async (req, res) => {
 
     try {
         await pool.query('SET search_path TO blog, public');
-        const userBlogs = await pool.query(
-            'SELECT * FROM blog_posts WHERE user_id = $1;',
-            [userId]
-        );
-        res.json(userBlogs.rows);
+        const alluserBlogs = await pool.query(`
+        SELECT blog_posts.*, users.username
+        FROM blog_posts
+        JOIN users ON blog_posts.user_id = users.id
+        WHERE blog_posts.user_id = $1;
+      
+        `,  [userId]);
+        
+        res.json(alluserBlogs.rows);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Database error' });

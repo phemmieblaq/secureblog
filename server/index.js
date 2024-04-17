@@ -2,6 +2,9 @@ const express = require('express');
 require('dotenv').config();
 const session = require('express-session');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+
 
 
 const { testDBConnection } = require('./src/database');
@@ -9,7 +12,6 @@ const userRoutes = require('./src/routes/appRoutes'); // Ensure this path is cor
 
 testDBConnection();
 // Immediately set the schema after establishing the connection pool
-
 
 
 const app = express();
@@ -21,6 +23,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+app.use(cookieParser());
 
 app.get('/test', cors(corsOptions), (req, res) => {
   res.json({ message: "Test successful" });
@@ -49,6 +53,12 @@ app.use(session({
    domain: 'localhost',
   }
 }));
+
+app.use((req, res, next) => {
+  req.session.save(() => next());
+  // console.log('Session:', req.session);
+});
+
 
 
 

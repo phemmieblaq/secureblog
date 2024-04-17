@@ -121,6 +121,69 @@ body {
   }
   .blogPostCard{
     width: 100%;
-    display: flex;
-  border:1px solid red;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: space-between;
+    align-items: center;
+    gap:20px;
+
   }
+  .innerCard{
+    max-width: 625px;
+    width:100%; 
+   padding :16px 12px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap:12px;
+    /* border:1px solid red; */
+    
+
+  }
+
+  .userContainer{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+   
+
+  
+  }
+
+.profile{
+  width:48px;
+  height:48px;
+  border-radius: 50%;
+  background-color: #41B0EF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileinitial{
+  color: #FFFFFF;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 19.36px;
+}
+.profileUsername{
+  color: #1A1A1A;
+  font-size: 16px;
+  font-weight: 500;
+}
+.blogTitle{
+  width: 100%;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1A1A1A;
+  line-height: 29.05px;
+
+}
+.blogPost{
+  width: 100%;
+  font-size: 16px;
+  font-weight: 400;
+  color: #363434;
+  line-height: 19.36pxpx;
+
+}

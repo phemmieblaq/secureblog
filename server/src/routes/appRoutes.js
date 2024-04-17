@@ -22,9 +22,10 @@ router.post('/forgot-password', userController.forgotPassword)
 
 
 router.post('/blog', authenticateToken, blogController.postBlog);
+router.get('/user/blogs',authenticateToken, blogController.getUserBlogs);
 router.put('/blog/:id', authenticateToken, blogController.updateBlog);
 router.delete('/blog/:id', authenticateToken, blogController.deleteBlog);
-router.get('/user/blogs', authenticateToken, blogController.getUserBlogs);
+router.get('/blogs', authenticateToken, blogController.getAllBlogs);
 
 
 

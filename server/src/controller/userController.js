@@ -174,7 +174,8 @@ const logoutUser=async (req, res) => {
                 req.session.user = {
                     id: user.id,
                     email: user.email,
-                    phone: user.phone
+                    phone: user.phone,
+                    username: user.username
                 };
             }
         }
@@ -229,6 +230,10 @@ const verifyOTP = async (req, res) => {
             maxAge: 86400000 // 24 hours
         });
 
+        const userId = req.session.user.id;
+        const username = req.session.user.username;
+
+
 
         // Clear the session data
         req.session.otp = null;
@@ -237,8 +242,11 @@ const verifyOTP = async (req, res) => {
         res.status(200).json({
             message: "Login successful",
             accessToken,
-            refreshToken
+            refreshToken,
+            userId, 
+            username
         });
+    
     } else {
         res.status(401).json({ error: "Invalid OTP" });
     }

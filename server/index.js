@@ -26,10 +26,6 @@ app.use(cors(corsOptions));
 
 app.use(cookieParser());
 
-app.get('/test', cors(corsOptions), (req, res) => {
-  res.json({ message: "Test successful" });
-});
-
 
 
 
@@ -62,9 +58,9 @@ app.use((req, res, next) => {
 
 
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the Express Server');
-});
+// app.get('/', (req, res) => {
+//   res.send('Welcome to the Express Server');
+// });
 
 // Use '/signin' as the route prefix for user routes
 app.use('', userRoutes);

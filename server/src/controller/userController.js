@@ -123,12 +123,21 @@ const token =async(req,res)=>{
 
 
 
-const logoutUser=async (req, res) => {
+const logoutUser = async (req, res) => {
     await pool.query('SET search_path TO blog, public');
-    refreshTokens = refreshTokens.filter(token => token !== req.body.token);
-    res.sendStatus(204); // No content to send back
-  };
+    
+    // Access the token from the cookies
+    const token = req.cookies['accessToken'];
 
+    // Filter out the token
+    refreshTokens = refreshTokens.filter(t => t !== token);
+
+    // Clear the cookie
+    res.clearCookie('accessToken');
+
+    // Send a response message along with the status code
+    res.status(200).json({message: 'Logout successful'});
+};
 
 
 
@@ -259,6 +268,7 @@ const verifyOTP = async (req, res) => {
 // Generate and send password reset token
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
+    req.session.user = { email };
     try {
         await pool.query('SET search_path TO blog, public');
         const userResult = await pool.query(queries.getUserByEmail, [email]);
@@ -266,33 +276,24 @@ const forgotPassword = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
         const user = userResult.rows[0];
-        // console.log('userlogin', user);
 
-
-        // Generate a password reset token
-        const token = crypto.randomBytes(20).toString('hex');
-        const expiresAt = new Date(Date.now() + 3600000); // Token expires in 1 hour
-
-        // Save the token in the database
-        await pool.query(queries.createPasswordResetToken, [user.id, token, expiresAt]);
-
-        // Send email with reset link
-        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+        // Generate a One-Time Password (OTP)
+        const otp = generateOTP();
+        req.session.otp = otp;
+        // Send email with OTP
         try {
             await transporter.sendMail({
                 from: process.env.MAIL_USERNAME,
                 to: user.email,
                 subject: 'Password Reset',
-                text: `To reset your password, please click on this link: ${resetLink}`
+                text: `Your One-Time Password (OTP) is: ${otp}`
             });
             console.log('Email sent successfully');
         } catch (error) {
             console.error('Failed to send email:', error);
         }
-        
 
-        res.json({ message: "If an account with that email exists, a password reset link has been sent.",
-                    token: token});
+        res.json({ message: "If an account with that email exists, a password reset OTP has been sent."});
     } catch (error) {
         console.log('error:', error);
         res.status(500).json({ error: error});
@@ -300,31 +301,36 @@ const forgotPassword = async (req, res) => {
 };
 
 
-const resetPassword = async (req, res) => {
-    const { token, newPassword } = req.body;
+const verifyPasswordOtp = async (req, res) => {
+   
+    const email = req.session.user.email;
+    const { otp } = req.body;
     try {
         await pool.query('SET search_path TO blog, public');
-        // Verify the token
-        const tokenResult = await pool.query(queries.getPasswordResetToken, [token]);
-        if (tokenResult.rows.length === 0) {
-            return res.status(400).json({ error: "Invalid or expired password reset token" });
+        const userResult = await pool.query(queries.getUserByEmail, [email]);
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
         }
+        const user = userResult.rows[0];
 
-        const userId = tokenResult.rows[0].user_id;
-        const hashedPassword = await hasher(newPassword, 12);
+        // Get the OTP from the session
+        const otpRecord = req.session.otp;
 
-        // Update the user's password and delete any password reset tokens
-        await pool.query(queries.updateUserPassword, [hashedPassword, userId]);
-        await pool.query(queries.deleteUserPasswordResetTokens, [userId]);
+        if (!otpRecord) {
+            return res.status(404).json({ error: "OTP not found" });
+            }
 
-        res.json({ message: "Your password has been updated successfully" });
+       
+
+        
+
+        // If the OTP is correct and has not expired, allow the user to reset their password
+        res.json({ message: "OTP verified. You may now reset your password." });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'An error occurred while trying to reset your password.' });
+        console.log('error:', error);
+        res.status(500).json({ error: error });
     }
 };
-
-
 module.exports = {
     addUser,
     getUserById,
@@ -333,6 +339,6 @@ module.exports = {
     logoutUser,
     loginUser,
     forgotPassword,
-    resetPassword
+    verifyPasswordOtp
 };
 

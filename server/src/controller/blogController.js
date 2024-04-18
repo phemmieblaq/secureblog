@@ -38,7 +38,7 @@ const updateBlog = async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 };
-const deleteBlog = async (req, res) => {P
+const deleteBlog = async (req, res) => {
     const { id } = req.params; // Blog ID
     const userId = req.user.userId;
 
@@ -51,7 +51,8 @@ const deleteBlog = async (req, res) => {P
         if (deletedBlog.rows.length === 0) {
             return res.status(404).json({ error: 'Blog not found or user unauthorized to delete this blog' });
         }
-        res.status(204).send();
+        // Return a success message
+        res.status(200).json({ message: 'Blog deleted successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Database error' });
@@ -91,10 +92,33 @@ const getUserBlogs = async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 };
+
+const getSingleUserBlog = async (req, res) => {
+    const userId = req.user.userId;
+    const { id } = req.params; // Assuming the blog ID is passed as a URL parameter
+
+    try {
+        await pool.query('SET search_path TO blog, public');
+        const userBlog = await pool.query(`
+        SELECT blog_posts.*, users.username
+        FROM blog_posts
+        JOIN users ON blog_posts.user_id = users.id
+        WHERE blog_posts.user_id = $1 AND blog_posts.id = $2;
+        `,  [userId, id]);
+        
+        res.json(userBlog.rows[0]); // Return the first (and only) blog post
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
+
 module.exports = {
     postBlog,
     updateBlog,
     deleteBlog,
     getAllBlogs,
+    getSingleUserBlog,
     getUserBlogs
 }

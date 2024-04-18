@@ -6,7 +6,7 @@ const authenticateToken = require('../middleware/authMiddleware')
 
 const router = express.Router();
 
-// Apply setSearchPath middleware to all routes that interact with the database
+
 
 
 router.post ('/auth/signup', userController.addUser)
@@ -16,7 +16,7 @@ router.post('/auth/verify-otp', userController.verifyOTP)
 
 router.post('/auth/logout', userController.logoutUser)
 router.post('/auth/token', userController.token)
-router.post('/reset-password', userController.resetPassword)
+router.post('/password/verify-otp', userController.verifyPasswordOtp)
 router.post('/forgot-password', userController.forgotPassword)
 
 
@@ -25,7 +25,8 @@ router.post('/blog', authenticateToken, blogController.postBlog);
 router.get('/user/blogs',authenticateToken, blogController.getUserBlogs);
 router.put('/blog/:id', authenticateToken, blogController.updateBlog);
 router.delete('/blog/:id', authenticateToken, blogController.deleteBlog);
-router.get('/blogs', authenticateToken, blogController.getAllBlogs);
+router.get('/blog/:id', authenticateToken, blogController.getSingleUserBlog);
+router.get('/blogs', blogController.getAllBlogs);
 
 
 

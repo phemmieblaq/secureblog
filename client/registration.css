@@ -23,7 +23,10 @@ body {
     align-items: center;
    
 }
-
+a {
+    text-decoration: none;
+    color:#363434;
+}
 label {
     display: block;
     margin-top: 10px;

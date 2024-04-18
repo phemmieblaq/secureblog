@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showError('serverError', data.error);  // Display the error message on the UI
                 } else {
                     console.log('Success:', data);
-                    window.location.href = 'http://localhost:8000/otp.html'; 
+                    window.location.href = 'http://localhost:8000/client/otp.html'; 
 
                     // Proceed with handling the successful response, e.g., redirect or update UI
                 }
@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 showError('serverError', error); // Improved error handling
             });
+
             
         }
     });

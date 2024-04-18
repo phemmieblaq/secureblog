@@ -11,6 +11,10 @@ html {
     box-sizing: inherit;
     
   }
+  a {
+    text-decoration: none;
+    color:#363434;
+}
 
 
 body {
@@ -20,7 +24,8 @@ body {
     min-height: 100vh;
     display:flex;
     flex-direction: column;
-    overflow-x: hidden;
+   
+     overflow-x: hidden;
     
    
 }
@@ -189,10 +194,6 @@ body {
 
 }
 
-  a {
-    text-decoration: none;
-    color:#363434;
-}
 .logo {
   max-width: 100px; 
   height: auto;
@@ -202,10 +203,6 @@ footer {
   background-color: #f8f9fa;
   padding: 20px 0;
   text-align: center;
-  position: fixed;
-bottom: 0px;
-width: 100%;
-
 }
 
 .footer-content {

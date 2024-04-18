@@ -1,21 +1,51 @@
 document.addEventListener('DOMContentLoaded', function() {
-    
-        
-});
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('messageForm');
     const titleInput = document.getElementById('title');
     const messageBodyInput = document.getElementById('messageBody');
+    const submitButton = document.getElementById('SubmitPost');
+    let blog = JSON.parse(localStorage.getItem('blog'));
+
+
+    document.querySelector('.imageContainer').addEventListener('click', function() {
+        window.location.href='http://localhost:8000/client/dashboard.html'; 
+       
+    });
+    document.querySelector('.logout').addEventListener('click', async function(e){
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:3000/auth/logout', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
     
-     form.addEventListener('submit', function(event) {
+            if (!response.ok) {
+                throw new Error('Failed to log out: ' + response.status);
+            }
+            console.log(response.json);
+    
+            // If the logout was successful, redirect to the login page
+            window.location.href = 'http://localhost:8000/client/login.html'; 
+        } catch (error) {
+            console.error('Error during logout:', error);
+            // Handle the error appropriately, e.g., show an error message to the user
+        }
+    });
+    
+
+    // If a blog post exists, prefill the form with its data and change the button text to 'Update'
+    if(blog !== null){
+        titleInput.value = blog.title;
+        messageBodyInput.value = blog.content;
+        submitButton.textContent = 'Update';
+    }
+
+    form.addEventListener('submit', function(event) {
         event.preventDefault();
         clearErrors();
         let isValid = true;
-
-        
 
         // Validate title
         if (titleInput.value.trim() === '') {
@@ -32,21 +62,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isValid) {
             event.preventDefault(); // Prevent form submission
         }
-    
 
         if (isValid) {
             const formData = {
-           
-                title: document.getElementById('title').value.trim(),
-              
-                content: document.getElementById('messageBody').value.trim()
+                title: titleInput.value.trim(),
+                content: messageBodyInput.value.trim()
             };
 
             console.log('Form Data:', formData); // Data to be sent
 
+            // If a blog post exists, update it. Otherwise, create a new one.
+            let url = 'http://localhost:3000/blog';
+            let method = 'POST';
+
+            if(blog !== null && blog.id !== null){
+                url += `/${blog.id}`;
+                method = 'PUT';
+            }
+
             // Fetch request
-            fetch('http://localhost:3000/blog', {
-                method: 'POST',
+            fetch(url, {
+                method: method,
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
@@ -58,25 +94,25 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 if (data.error) {
-                    
                     showError('serverError', data.error);  // Display the error message on the UI
                 } else {
                     console.log('Success:', data);
-                    window.location.href = 'http://localhost:8000/myblog.html'; 
+                    window.location.href = 'http://localhost:8000/client/myblog.html'; 
+
+                    // If a blog post was updated, remove it from the local storage
+                    if(method === 'PUT'){
+                        localStorage.removeItem('blog');
+                    }
 
                     // Proceed with handling the successful response, e.g., redirect or update UI
                 }
             })
             .catch((error) => {
-                
                 showError('serverError', error); // Improved error handling
             });
-            
         }
     });
 });
-
-    
 
     function showError(id, message) {
         const errorDiv = document.getElementById(id);

@@ -1,7 +1,7 @@
 html {
     box-sizing: border-box;
     font-family: Familjen Grotesk;
-    background-color:  #FAFAFA;
+    background-color:  #fcfcfc;
   }
   *,
   *::before,
@@ -87,9 +87,25 @@ body {
     width: 100%;
    
     justify-content:space-between;
+   
     
     
-    
+  }
+  a {
+    text-decoration: none;
+    color:#363434;
+}
+  
+
+  .buttonWrapper{
+    width:100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+   
+  }
+  .mainWrapper{
+    cursor: pointer;
   }
 
   .blogCardContainer{
@@ -99,6 +115,31 @@ body {
    
 
   }
+
+#update {
+  
+  max-width: max-content;
+  text-align: center;
+  padding: 8px 12px;
+  background-color:#41B0EF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#delete{
+  max-width: max-content;
+  width:100%;
+  text-align: center;
+  padding: 8px 12px;
+  background-color:#FF4F03;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
   .mainHeading{
     width:100%;
     display: flex;
@@ -137,6 +178,10 @@ body {
     flex-direction: column;
     justify-content: center;
     gap:12px;
+    box-shadow: 0px 10px 10px -5px #5a5c5e0a;
+    background-color: #fafafa;
+   
+    border-radius: 8px;
     /* border:1px solid red; */
     
 
@@ -187,4 +232,9 @@ body {
   color: #363434;
   line-height: 19.36pxpx;
 
+}
+.logo {
+  max-width: 100px; 
+  height: auto;
+  margin-bottom: 10px; 
 }

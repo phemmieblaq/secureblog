@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded',  function() {
                     console.log('Success:', data.message);
                     alert('login sucessfully')
                     // Redirect user or update UI as needed
-                    window.location.href = 'http://localhost:8000/homepage.html'; // Redirect to dashboard
+                    window.location.href = 'http://localhost:8000/client/dashboard.html'; // Redirect to dashboard
                 } else {
                     showError('serverError',data.error); // Throw an error if the server responded with an error
                 }

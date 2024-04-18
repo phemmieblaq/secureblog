@@ -67,6 +67,17 @@ input[type="text"]{
     border: 1px solid #D0D5DD;
     border-radius: 4px;
 }
+
+.blogWrapper{
+    display: flex;
+    max-width: 200px;
+    width: 100%;
+   
+    justify-content:space-between;
+    
+    
+    
+  }
 #messageBody{
     width: 100%;
     min-height:200px;
@@ -137,4 +148,8 @@ button:hover {
     justify-content: center;
     align-items: center;
     gap:56px;
+}
+a{
+    text-decoration: none;
+    color:#363434;
 }

@@ -15,7 +15,7 @@ require('dotenv').config()
 
 
 const addUser = async (req, res) => {
-    const { username, email, phone, password_hash } = req.body;
+    const { username, email,  password_hash } = req.body;
 
 
   
@@ -48,7 +48,7 @@ const addUser = async (req, res) => {
         const cryptedPassword = await hasher(password_hash, 12);
    
         // Insert the new user into the database
-       const saveUser= await pool.query(queries.addUser, [username, email, phone, cryptedPassword]);
+       const saveUser= await pool.query(queries.addUser, [username, email,  cryptedPassword]);
        console.log(saveUser);
         res.status(201).json(
             { message: 'User added successfully',
@@ -183,7 +183,7 @@ const logoutUser = async (req, res) => {
                 req.session.user = {
                     id: user.id,
                     email: user.email,
-                    phone: user.phone,
+             
                     username: user.username
                 };
             }
@@ -210,9 +210,12 @@ const verifyOTP = async (req, res) => {
     const { otp } = req.body;
     console.log('Received OTP:', req.body.otp);
     console.log('Expected OTP:', req.session.otp);
+    const otpExpired = new Date() > new Date(req.session.otp.expiresAt);
 
-    if (req.session.otp === otp)
+    if (req.session.otp.otp === otp && !otpExpired)
     {
+
+        
        
         // Generate tokens after successful OTP verification
         const accessToken = jwt.sign(
@@ -269,6 +272,8 @@ const verifyOTP = async (req, res) => {
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
     req.session.user = { email };
+    
+  
     try {
         await pool.query('SET search_path TO blog, public');
         const userResult = await pool.query(queries.getUserByEmail, [email]);
@@ -279,7 +284,9 @@ const forgotPassword = async (req, res) => {
 
         // Generate a One-Time Password (OTP)
         const otp = generateOTP();
+        console.log(otp);
         req.session.otp = otp;
+      
         // Send email with OTP
         try {
             await transporter.sendMail({
@@ -302,8 +309,9 @@ const forgotPassword = async (req, res) => {
 
 
 const verifyPasswordOtp = async (req, res) => {
-   
     const email = req.session.user.email;
+    console.log(email)
+   
     const { otp } = req.body;
     try {
         await pool.query('SET search_path TO blog, public');
@@ -311,25 +319,52 @@ const verifyPasswordOtp = async (req, res) => {
         if (userResult.rows.length === 0) {
             return res.status(404).json({ error: "User not found" });
         }
-        const user = userResult.rows[0];
+        // const user = userResult.rows[0];
 
         // Get the OTP from the session
         const otpRecord = req.session.otp;
 
         if (!otpRecord) {
             return res.status(404).json({ error: "OTP not found" });
-            }
+        }
 
-       
+        const otpExpired = new Date() > new Date(otpRecord.expiresAt);
 
-        
+        if (otpRecord.otp !== otp || otpExpired) {
+            return res.status(401).json({ error: otpExpired ? "OTP expired" : "Invalid OTP" });
+        }
 
         // If the OTP is correct and has not expired, allow the user to reset their password
         res.json({ message: "OTP verified. You may now reset your password." });
     } catch (error) {
         console.log('error:', error);
         res.status(500).json({ error: error });
+
     }
+
+
+};
+const passwordReset = async (req, res) => {
+    const { newPassword } = req.body;
+    const email = req.session.user.email;
+    
+
+
+    await pool.query('SET search_path TO blog, public');
+
+    // Hash the new password
+    const hashedPassword = await hasher(newPassword, 12);
+
+    // Update the user's password in the database
+    await pool.query('UPDATE users SET password_hash = $1 WHERE email = $2', [hashedPassword, email]);
+
+
+    // Invalidate the user email and otp in the session so it wont be used again 
+    req.session.user = null;
+    req.session.otp = null;
+
+
+    res.json({ message: 'Password reset successful' });
 };
 module.exports = {
     addUser,
@@ -339,6 +374,7 @@ module.exports = {
     logoutUser,
     loginUser,
     forgotPassword,
-    verifyPasswordOtp
+    verifyPasswordOtp,
+    passwordReset
 };
 

@@ -1,5 +1,3 @@
-
-// script.js
 async function getCsrfToken() {
     try {
         const response = await fetch('http://localhost:3000/csrf-token', {
@@ -21,60 +19,52 @@ async function getCsrfToken() {
 
 
 
+
+
+
+function isValidPassword(password) {
+    // Check if password is at least 8 characters long
+    if (password.length < 8) {
+        return false;
+    }
+
+    // Add more checks as per NIST guidelines
+
+    return true;
+}
+
+
 document.addEventListener('DOMContentLoaded', async function() {
     const csrfToken = await getCsrfToken();
     const form = document.getElementById('loginForm');
     
-
     form.addEventListener('submit', function(event) {
         event.preventDefault();
         clearErrors();
         let isValid = true;
 
-        
-        const email = document.getElementById('email').value;
-        if (!validateEmail(email)) {
-            showError('emailError', 'Please enter a valid email address.');
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (password !== confirmPassword) {
+            event.preventDefault(); // Prevent form from being submitted
+            showError('confirmPasswordError', 'Passwords do not match')
+            isValid = false;
+        }
+        if (!isValidPassword(password)) {
+            showError('passwordError', 'Password must be at least 8 characters long.');
             isValid = false;
         }
 
-        const password = document.getElementById('password').value;
-
-        const commonPasswords = new Set([
-            "password", "123456", "123456789", "qwerty", "12345678", 
-            "111111", "1234567", "sunshine", "qwerty123", "iloveyou"
-        ]);
-    
-        // if (password.length < 8) {
-        //     showError('passwordError', 'Password must be at least 8 characters long.');
-        //     isValid = false;
-        // }
-        if (commonPasswords.has(password)) {
-            showError('passwordError', 'This password is too common. Please choose a different one.');
-            return false;
-        }
-    
-        // if (/(\w)\1{2,}/.test(password)) {
-        //     showError('passwordError', 'Password should not contain repetitive characters.');
-        //     return false;
-        // }
-    
-       
-        
-        
-
         if (isValid) {
             const formData = {
-           
-                email: document.getElementById('email').value.trim().toLowerCase(),
-              
-                password_hash: document.getElementById('password').value.trim()
+                newPassword: document.getElementById('password').value.trim(),
             };
 
             console.log('Form Data:', formData); // Data to be sent
 
             // Fetch request
-            fetch('http://localhost:3000/auth/login', {
+            fetch('http://localhost:3000/reset-password', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -84,33 +74,25 @@ document.addEventListener('DOMContentLoaded', async function() {
                 body: JSON.stringify(formData)
             })
             .then(response => {
-                return response.json();  // Only parse as JSON if the response was okay
+                return response.json(); // Only parse as JSON if the response was okay
             })
             .then(data => {
                 if (data.error) {
-                    
-                    showError('serverError', data.error);  // Display the error message on the UI
+                    showError('serverError', data.error); // Display the error message on the UI
                 } else {
                     console.log('Success:', data);
-                    window.location.href = 'http://localhost:8000/client/otp.html'; 
+                    window.location.href = 'http://localhost:8000/client/login.html'; 
 
                     // Proceed with handling the successful response, e.g., redirect or update UI
                 }
             })
             .catch((error) => {
-                
                 showError('serverError', error); // Improved error handling
             });
-
-            
         }
-    });
-});
-
-    function validateEmail(email) {
-        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(email);
-    }
+    }); 
+}); 
+    
 
     function showError(id, message) {
         const errorDiv = document.getElementById(id);

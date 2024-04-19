@@ -1,4 +1,28 @@
-document.addEventListener('DOMContentLoaded', function() {
+// script.js
+async function getCsrfToken() {
+    try {
+        const response = await fetch('http://localhost:3000/csrf-token', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch CSRF token: ' + response.status);
+        }
+
+        const data = await response.json();
+        return data.csrfToken;
+    } catch (error) {
+        console.log('Error during fetching CSRF token:', error);
+        // Handle the error appropriately, e.g., show an error message to the user
+    }
+}
+
+
+
+
+document.addEventListener('DOMContentLoaded', async function() {
+    const csrfToken = await getCsrfToken();
     const form = document.getElementById('messageForm');
     const titleInput = document.getElementById('title');
     const messageBodyInput = document.getElementById('messageBody');
@@ -11,13 +35,15 @@ document.addEventListener('DOMContentLoaded', function() {
        
     });
     document.querySelector('.logout').addEventListener('click', async function(e){
+       
         e.preventDefault();
         try {
             const response = await fetch('http://localhost:3000/auth/logout', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken
                 },
             });
     
@@ -85,7 +111,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: method,
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken
                 },
                 body: JSON.stringify(formData)
             })

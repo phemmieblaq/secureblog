@@ -1,5 +1,27 @@
-// script.js
+async function getCsrfToken() {
+    try {
+        const response = await fetch('http://localhost:3000/csrf-token', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch CSRF token: ' + response.status);
+        }
+
+        const data = await response.json();
+        return data.csrfToken;
+    } catch (error) {
+        console.log('Error during fetching CSRF token:', error);
+        // Handle the error appropriately, e.g., show an error message to the user
+    }
+}
+
+
+
+
 document.addEventListener('DOMContentLoaded', async function() {
+    const csrfToken = await getCsrfToken();
 
     document.querySelector('.imageContainer').addEventListener('click', function() {
         window.location.href='http://localhost:8000/client/dashboard.html'; 
@@ -127,7 +149,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                     const response = await fetch(`http://localhost:3000/blog/${blog.id}`, {
                         method: 'DELETE',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'CSRF-Token': csrfToken
                         },
                         credentials: 'include'
                     });

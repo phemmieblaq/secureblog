@@ -1,10 +1,32 @@
+async function getCsrfToken() {
+    try {
+        const response = await fetch('http://localhost:3000/csrf-token', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch CSRF token: ' + response.status);
+        }
+
+        const data = await response.json();
+        return data.csrfToken;
+    } catch (error) {
+        console.log('Error during fetching CSRF token:', error);
+        // Handle the error appropriately, e.g., show an error message to the user
+    }
+}
+
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     let blogData;
 
     const blog = JSON.parse(localStorage.getItem('blog'));
 
     if(blog !== null){
-        fetch(`http://localhost:3000/blog/${blog.id}`, {
+        fetch(`http://localhost:3000/blog/${blog.user_id}/${blog.id}`, {
             method: 'GET',
             credentials: 'include',
             headers: {

@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const generateOTP =() =>{
+const generateOTP = () => {
     const otpLength = 6;
     const otpDigits = '0123456789';
     let otp = '';
@@ -14,7 +14,10 @@ const generateOTP =() =>{
         }
     }
 
-    return otp;
+    // OTP expires in 10 minutes
+    const expiresAt = new Date(Date.now() + 600000);
+
+    return { otp, expiresAt };
 }
 
 module.exports = generateOTP;

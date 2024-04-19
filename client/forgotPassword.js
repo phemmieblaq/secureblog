@@ -21,85 +21,48 @@ async function getCsrfToken() {
 
 
 
+
+
 document.addEventListener('DOMContentLoaded', async function() {
     const csrfToken = await getCsrfToken();
-    const form = document.getElementById('registrationForm');
-    const mathQuestion = document.getElementById('mathQuestion');
-    let correctAnswer;  // Variable to store the correct answer for the CAPTCHA
-
+    const form = document.getElementById('loginForm');
     
-    function generateMathProblem() {
-        const num1 = Math.floor(Math.random() * 20) + 1;
-        const num2 = Math.floor(Math.random() * 20) + 1;
-        correctAnswer = num1 + num2;
-        mathQuestion.textContent = `${num1} + ${num2}`;
-    }
 
-    generateMathProblem();
-
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', async function(event) {
+       
         event.preventDefault();
         clearErrors();
         let isValid = true;
 
-        const username = document.getElementById('username').value;
-        if (username.length < 3) {
-            showError('usernameError', 'Username must be at least 3 characters long.');
-            isValid = false;
-        }
-
-       
-       
+        
         const email = document.getElementById('email').value;
         if (!validateEmail(email)) {
             showError('emailError', 'Please enter a valid email address.');
             isValid = false;
         }
 
-        const password = document.getElementById('password').value;
-
-        const commonPasswords = new Set([
-            "password", "123456", "123456789", "qwerty", "12345678", 
-            "111111", "1234567", "sunshine", "qwerty123", "iloveyou"
-        ]);
-    
-        if (password.length < 8) {
-            showError('passwordError', 'Password must be at least 8 characters long.');
-            isValid = false;
-        }
-        if (commonPasswords.has(password)) {
-            showError('passwordError', 'This password is too common. Please choose a different one.');
-            return false;
-        }
-    
-        if (/(\w)\1{2,}/.test(password)) {
-            showError('passwordError', 'Password should not contain repetitive characters.');
-            return false;
-        }
-    
-        if (password.includes(username)) {
-            showError('passwordError', 'Password should not contain your username.');
-            return false;
-        }
         
-        const userAnswer = parseInt(document.getElementById('captcha').value, 10);
-        if (userAnswer !== correctAnswer) {
-            showError('captchaError', 'Incorrect answer. Please try again.');
-            isValid = false;
-        }
+    
+        
+    
+       
+        
+        
 
         if (isValid) {
             const formData = {
-                username: document.getElementById('username').value.trim().toLowerCase(),
+           
                 email: document.getElementById('email').value.trim().toLowerCase(),
-                password_hash: document.getElementById('password').value.trim()
+              
+                
             };
 
             console.log('Form Data:', formData); // Data to be sent
 
             // Fetch request
-            fetch('http://localhost:3000/auth/signup', {
+            fetch('http://localhost:3000/forgot-password', {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                     'CSRF-Token': csrfToken
@@ -115,7 +78,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                     showError('serverError', data.error);  // Display the error message on the UI
                 } else {
                     console.log('Success:', data);
-                    window.location.href = 'login.html'; 
+                    window.location.href = 'http://localhost:8000/client/otpPassword.html'; 
+
                     // Proceed with handling the successful response, e.g., redirect or update UI
                 }
             })
@@ -123,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 
                 showError('serverError', error); // Improved error handling
             });
+
             
         }
     });

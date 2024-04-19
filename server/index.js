@@ -3,6 +3,8 @@ require('dotenv').config();
 const session = require('express-session');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet'); 
+const csurf = require('csurf'); 
 
 
 
@@ -19,7 +21,7 @@ const corsOptions = {
   origin: 'http://localhost:8000', // Add other IPs if necessary
   credentials: true, // To allow sessions and cookies to be sent
   methods: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Authorization'
+  allowedHeaders: 'Content-Type,Authorization, CSRF-Token'
 };
 
 app.use(cors(corsOptions));
@@ -31,6 +33,8 @@ app.use(cookieParser());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(helmet());
+app.use(csurf({ cookie: true }));
 
 
 
@@ -46,13 +50,18 @@ app.use(session({
     httpOnly: true,
     secure: false, // Set to true and add SameSite=None in production if accessed over HTTPS
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-   domain: 'localhost',
+    sameSite: 'strict', // This attribute can prevent cookies from being sent in cross-site requests
+    domain: 'localhost',
   }
 }));
 
 app.use((req, res, next) => {
   req.session.save(() => next());
   // console.log('Session:', req.session);
+});
+// New route to send CSRF token
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
 });
 
 

@@ -94,9 +94,8 @@ const getUserBlogs = async (req, res) => {
 };
 
 const getSingleUserBlog = async (req, res) => {
-    const userId = req.user.userId;
-    const { id } = req.params; // Assuming the blog ID is passed as a URL parameter
-
+    const { userId, id } = req.params;// Assuming the blog ID is passed as a URL parameter
+    console.log(`userId: ${userId}, id: ${id}`);
     try {
         await pool.query('SET search_path TO blog, public');
         const userBlog = await pool.query(`

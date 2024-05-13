@@ -11,10 +11,7 @@ html {
     box-sizing: inherit;
     
   }
-  a {
-    text-decoration: none;
-    color:#FF4F03;
-}
+
 
 body {
   
@@ -23,8 +20,7 @@ body {
     min-height: 100vh;
     display:flex;
     flex-direction: column;
-   
-     overflow-x: hidden;
+    overflow-x: hidden;
     
    
 }
@@ -35,7 +31,7 @@ body {
     justify-content: flex-start;
     align-items: center;
     padding: 24px 80px;
-    margin-bottom: 80px;
+   
     
     
 }
@@ -193,6 +189,10 @@ body {
 
 }
 
+  a {
+    text-decoration: none;
+    color:#363434;
+}
 .logo {
   max-width: 100px; 
   height: auto;
@@ -202,6 +202,10 @@ footer {
   background-color: #f8f9fa;
   padding: 20px 0;
   text-align: center;
+  position: fixed;
+bottom: 0px;
+width: 100%;
+
 }
 
 .footer-content {
@@ -235,30 +239,51 @@ footer {
 .footer-links li a:hover {
   text-decoration: underline;
 }
+.privacyBody{
+  width: 100%;
 
-.success{
-  display: none;
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #4caf50;
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(40, 38, 38, 0.1);
-  z-index: 9999;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 24px 80px;
+  margin-bottom: 80px;
 }
-.errorMessage {
-  display: none;
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: red;
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(40, 38, 38, 0.1);
-  z-index: 9999;
+
+p{
+
+    font-size: 16px;
+    font-weight: 400;
+    color: #3c3838;
+    line-height: 19.36px;
+    margin-bottom: 5px;
+}
+
+h2{
+
+    font-size: 22px;
+    font-weight: 500;
+    color: #292727;
+    line-height: 19.36px;
+    margin-block: 10px;
+    
+}
+h1{
+
+    font-size: 28px;
+    font-weight: 600;
+    color: #312f2f;
+    line-height: 19.36px;
+    margin-block: 10px;
+}
+
+ul{
+    padding-left:20px;
+    /* border:1px solid red; */
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+   
+}
+a {
+    text-decoration: none;
+    color:#FF4F03;
 }

@@ -62,9 +62,10 @@ document.addEventListener('DOMContentLoaded',  async function() {
         
                 if (response.ok) {
                     console.log('Success:', data.message);
-                    alert('login sucessfully')
+                    // alert('login sucessfully')
                     // Redirect user or update UI as needed
-                    window.location.href = 'http://localhost:8000/client/dashboard.html'; // Redirect to dashboard
+                    showNotification('login succesfully', 'success','http://localhost:8000/client/dashboard.html');
+                     // Redirect to dashboard
                 } else {
                     showError('serverError',data.error); // Throw an error if the server responded with an error
                 }
@@ -90,4 +91,23 @@ document.addEventListener('DOMContentLoaded',  async function() {
     }
 
 
+    const showNotification = (message, type,location  ) => {
+        var notifier =
+          type === "success"
+            ? document.getElementById("success")
+            : document.getElementById("errorMessage");
+            notifier.textContent = message;
+            notifier.style.display = "block";
+      
+        // Hide the notification after a certain duration (e.g., 3 seconds)
+        setTimeout(function () {
+          notifier.style.display = "none";
+      
+          if (type === "success") {
+            window.location.href = location;
+            console.log
+          }
+        }, 3000); // 3000 milliseconds = 3 seconds
+      };
+      
 

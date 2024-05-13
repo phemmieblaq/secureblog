@@ -23,6 +23,7 @@ async function getCsrfToken() {
 
 document.addEventListener('DOMContentLoaded',  async function() {
     const csrfToken = await getCsrfToken();
+    
     const form = document.getElementById('otpForm');
     
 
@@ -62,8 +63,10 @@ document.addEventListener('DOMContentLoaded',  async function() {
         
                 if (response.ok) {
                     console.log('Success:', data.message);
-                    // Redirect user or update UI as needed
-                    window.location.href = 'http://localhost:8000/client/newPassword.html'; // Redirect to dashboard
+                    showNotification('Valid OTP', 'success','http://localhost:8000/client/newPassword.html');
+
+                  
+                    //window.location.href = 'http://localhost:8000/client/newPassword.html'; // Redirect to dashboard
                 } else {
                     showError('serverError',data.error); // Throw an error if the server responded with an error
                 }
@@ -87,6 +90,28 @@ document.addEventListener('DOMContentLoaded',  async function() {
             div.style.display = 'none';
         });
     }
+
+
+    const showNotification = (message, type,location  ) => {
+        var notifier =
+          type === "success"
+            ? document.getElementById("success")
+            : document.getElementById("errorMessage");
+            notifier.textContent = message;
+            notifier.style.display = "block";
+      
+
+        setTimeout(function () {
+          notifier.style.display = "none";
+      
+          if (type === "success") {
+            window.location.href = location;
+            console.log
+          }
+        }, 2000); 
+      };
+      
+
 
 
 

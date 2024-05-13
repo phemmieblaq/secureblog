@@ -49,7 +49,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     secure: false, // Set to true and add SameSite=None in production if accessed over HTTPS
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    maxAge: 1 * 60 * 60 * 1000, // 24 hours
     sameSite: 'strict', // This attribute can prevent cookies from being sent in cross-site requests
     domain: 'localhost',
   }
@@ -64,17 +64,25 @@ app.get('/csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
+app.get('/protected-route', (req, res) => {
+  const token = req.cookies['accessToken']; 
+  if (!token) {
+    return res.status(403).send('Session has expired. Please log in again.');
+  }
+
+  // If the session exists, continue with your route handling
+  res.send('You are authenticated!');
+});
 
 
 
-// app.get('/', (req, res) => {
-//   res.send('Welcome to the Express Server');
-// });
 
-// Use '/signin' as the route prefix for user routes
 app.use('', userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  //console.log(`Server running on http://localhost:${PORT}`);
 });
+
+
+module.exports = { app };

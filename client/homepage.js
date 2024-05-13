@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     ${blog.title}
                 </p>
                 <p class="blogPost">
-                    ${blog.content}
+                    ${reduceString(blog.content)}
                 </p>
                 <div class="blogFooter">
                     <!-- You can add more footer content here if needed -->
@@ -89,3 +89,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         container.appendChild(card);
     }
 });
+
+
+const reduceString =(content) => {
+    // Check if the length of the string is greater than the maximum number
+    if (content.length > 30) {
+      // Return the substring from the beginning to the max length and add '...'
+      return content.substring(0, 30) + '...';
+    } else {
+      // Return the content as it is if it's shorter than the max length
+      return content;
+    }
+  }

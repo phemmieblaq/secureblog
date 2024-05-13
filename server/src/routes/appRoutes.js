@@ -10,7 +10,10 @@ const router = express.Router();
 
 
 router.post ('/auth/signup', userController.addUser)
-router.get('/user:id', userController.getUserById)
+router.get('/user/blogs',authenticateToken, blogController.getUserBlogs);
+router.get('/user/:email', userController.getUserByEmail);
+
+//router.get('/user/:id', userController.getUserById)
 router.post('/auth/login', userController.loginUser)
 router.post('/auth/verify-otp', userController.verifyOTP)
 
@@ -19,6 +22,10 @@ router.post('/auth/token', userController.token)
 router.post('/password/verify-otp', userController.verifyPasswordOtp)
 router.post('/forgot-password', userController.forgotPassword)
 router.post('/reset-password', userController.passwordReset)
+router.delete('/delete-user', userController.deleteUserByEmail)
+
+
+
 
 
 
@@ -28,6 +35,12 @@ router.put('/blog/:id', authenticateToken, blogController.updateBlog);
 router.delete('/blog/:id', authenticateToken, blogController.deleteBlog);
 router.get('/blog/:userId/:id', authenticateToken, blogController.getSingleUserBlog);
 router.get('/blogs', blogController.getAllBlogs);
+
+router.post ('/store-blog', authenticateToken, blogController.storeSingleBlog);
+
+router.get ('/store-blog', authenticateToken, blogController.getStoreBlog);
+
+router.get ('/clear-blog', authenticateToken, blogController.clearBlog);
 
 
 

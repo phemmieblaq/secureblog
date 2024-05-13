@@ -23,6 +23,7 @@ async function getCsrfToken() {
 
 document.addEventListener('DOMContentLoaded', async function() {
     const csrfToken = await getCsrfToken();
+    console.log(csrfToken)
     const form = document.getElementById('registrationForm');
     const mathQuestion = document.getElementById('mathQuestion');
     let correctAnswer;  // Variable to store the correct answer for the CAPTCHA
@@ -62,25 +63,40 @@ document.addEventListener('DOMContentLoaded', async function() {
             "password", "123456", "123456789", "qwerty", "12345678", 
             "111111", "1234567", "sunshine", "qwerty123", "iloveyou"
         ]);
-    
+        
+        // Check if password is at least 8 characters long
         if (password.length < 8) {
             showError('passwordError', 'Password must be at least 8 characters long.');
-            isValid = false;
+            return false;
         }
+        
+        // Check if password is a common password
         if (commonPasswords.has(password)) {
             showError('passwordError', 'This password is too common. Please choose a different one.');
             return false;
         }
-    
+        
+        // Check if password contains repetitive characters
         if (/(\w)\1{2,}/.test(password)) {
             showError('passwordError', 'Password should not contain repetitive characters.');
             return false;
         }
-    
+        
+        // Check if password contains the username
         if (password.includes(username)) {
             showError('passwordError', 'Password should not contain your username.');
             return false;
         }
+        
+        // Check if password contains a mix of characters
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/.test(password)) {
+            showError('passwordError', 'Password must contain a mix of uppercase and lowercase letters, numbers, and special characters.');
+            return false;
+        }
+        
+        
+        
+      
         
         const userAnswer = parseInt(document.getElementById('captcha').value, 10);
         if (userAnswer !== correctAnswer) {
@@ -98,13 +114,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             console.log('Form Data:', formData); // Data to be sent
 
             // Fetch request
+            
             fetch('http://localhost:3000/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'CSRF-Token': csrfToken
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
+                credentials: 'include'  
             })
             .then(response => {
                 return response.json();  // Only parse as JSON if the response was okay
@@ -114,8 +132,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                     
                     showError('serverError', data.error);  // Display the error message on the UI
                 } else {
-                    console.log('Success:', data);
-                    window.location.href = 'login.html'; 
+                    showNotification('Account created successfully. Redirecting to login page...', 'success','http://localhost:8000/client/login.html');
+
+                    // console.log('Success:', data);
+                    // window.location.href = 'login.html'; 
                     // Proceed with handling the successful response, e.g., redirect or update UI
                 }
             })
@@ -148,4 +168,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
 
+    const showNotification = (message, type,location  ) => {
+        var notifier =
+          type === "success"
+            ? document.getElementById("success")
+            : document.getElementById("errorMessage");
+            notifier.textContent = message;
+            notifier.style.display = "block";
+      
 
+        setTimeout(function () {
+          notifier.style.display = "none";
+      
+          if (type === "success") {
+            window.location.href = location;
+            console.log
+          }
+        }, 2000); 
+      };
+      

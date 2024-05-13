@@ -75,6 +75,9 @@ const getAllBlogs = async (req, res) => {
 };
 const getUserBlogs = async (req, res) => {
     const userId = req.user.userId;
+    console.log(userId);
+  // Assuming the JWT includes userId after authentication
+    console.log(userId);
 
     try {
         await pool.query('SET search_path TO blog, public');
@@ -92,7 +95,6 @@ const getUserBlogs = async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 };
-
 const getSingleUserBlog = async (req, res) => {
     const { userId, id } = req.params;// Assuming the blog ID is passed as a URL parameter
     console.log(`userId: ${userId}, id: ${id}`);
@@ -113,11 +115,46 @@ const getSingleUserBlog = async (req, res) => {
 };
 
 
+
+const storeSingleBlog= async (req, res) => {
+    try {
+        await pool.query('SET search_path TO blog, public');
+        req.session.blogData = req.body;
+        res.json({ message: "blog stored successfully" }); // Send a JSON response
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+const getStoreBlog = async (req, res) => {
+    try {
+        await pool.query('SET search_path TO blog, public');
+        res.send(req.session.blogData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
+const clearBlog = async (req, res) => {
+    try {
+        req.session.blogData = null;
+        res.send("Blog data cleared from session");
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+
 module.exports = {
     postBlog,
     updateBlog,
     deleteBlog,
     getAllBlogs,
     getSingleUserBlog,
-    getUserBlogs
+    getUserBlogs,
+    storeSingleBlog,
+    clearBlog,
+    getStoreBlog
 }

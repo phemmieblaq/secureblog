@@ -239,5 +239,16 @@ width: 100%;
 .footer-links li a:hover {
   text-decoration: underline;
 }
+.privacyBody{
+  width: 100%;
 
+  justify-content: flex-start;
+  align-items: center;
+  padding: 24px 80px;
+  margin-bottom: 80px;
+}
 
+a {
+  text-decoration: none;
+  color:#FF4F03;
+}

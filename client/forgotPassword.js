@@ -78,7 +78,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                     showError('serverError', data.error);  // Display the error message on the UI
                 } else {
                     console.log('Success:', data);
-                    window.location.href = 'http://localhost:8000/client/otpPassword.html'; 
+                    localStorage.setItem('email', email);
+                    showNotification('Check your mail for the one time password ', 'success','http://localhost:8000/client/otpPassword.html');
+
+
+                    //window.location.href = 'http://localhost:8000/client/otpPassword.html'; 
 
                     // Proceed with handling the successful response, e.g., redirect or update UI
                 }
@@ -111,6 +115,24 @@ document.addEventListener('DOMContentLoaded', async function() {
             div.style.display = 'none';
         });
     }
+    const showNotification = (message, type,location  ) => {
+        var notifier =
+          type === "success"
+            ? document.getElementById("success")
+            : document.getElementById("errorMessage");
+            notifier.textContent = message;
+            notifier.style.display = "block";
+      
 
+        setTimeout(function () {
+          notifier.style.display = "none";
+      
+          if (type === "success") {
+            window.location.href = location;
+            console.log
+          }
+        }, 2000); 
+      };
+      
 
 

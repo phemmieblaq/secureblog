@@ -40,24 +40,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const password = document.getElementById('password').value;
 
-        const commonPasswords = new Set([
-            "password", "123456", "123456789", "qwerty", "12345678", 
-            "111111", "1234567", "sunshine", "qwerty123", "iloveyou"
-        ]);
-    
-        // if (password.length < 8) {
-        //     showError('passwordError', 'Password must be at least 8 characters long.');
-        //     isValid = false;
-        // }
-        if (commonPasswords.has(password)) {
-            showError('passwordError', 'This password is too common. Please choose a different one.');
-            return false;
-        }
-    
-        // if (/(\w)\1{2,}/.test(password)) {
-        //     showError('passwordError', 'Password should not contain repetitive characters.');
-        //     return false;
-        // }
+        
     
        
         
@@ -91,8 +74,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                     
                     showError('serverError', data.error);  // Display the error message on the UI
                 } else {
-                    console.log('Success:', data);
-                    window.location.href = 'http://localhost:8000/client/otp.html'; 
+                    //console.log('Success:', data);
+                    showNotification('Check your mail for the one time password ', 'success','http://localhost:8000/client/otp.html');
+
+
 
                     // Proceed with handling the successful response, e.g., redirect or update UI
                 }
@@ -128,3 +113,22 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
 
+    const showNotification = (message, type,location  ) => {
+        var notifier =
+          type === "success"
+            ? document.getElementById("success")
+            : document.getElementById("errorMessage");
+            notifier.textContent = message;
+            notifier.style.display = "block";
+      
+        // Hide the notification after a certain duration (e.g., 3 seconds)
+        setTimeout(function () {
+          notifier.style.display = "none";
+      
+          if (type === "success") {
+            window.location.href = location;
+         
+          }
+        }, 3000); // 3000 milliseconds = 3 seconds
+      };
+      

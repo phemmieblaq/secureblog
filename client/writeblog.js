@@ -18,48 +18,89 @@ async function getCsrfToken() {
     }
 }
 
+async function clearStoredBlog() {
+    try {
+        const response = await fetch('http://localhost:3000/clear-blog', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch CSRF token: ' + response.status);
+        }
+
+        const data = await response.json();
+        return data
+    } catch (error) {
+        console.error('Failed to fetch blog:', error);
+        return null;
+    }
+}
+
+
+async function getStoredBlog() {
+    try {
+        const response = await fetch('http://localhost:3000/store-blog', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch CSRF token: ' + response.status);
+        }
+
+        const data = await response.json();
+        return data
+    } catch (error) {
+        //console.log('Error during fetching get stored data:', error);
+        return null; 
+    }
+}
+
+
+async function getSession() {
+    try {
+        const response = await fetch('http://localhost:3000/protected-route', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            showNotification('Session timed out. redirecting to login lage ','error','http://localhost:8000/client/login.html')
+        }
+
+        const data = await response.json();
+        return data
+    } catch (error) {
+        console.log('Error during fetching protected route:', error);
+        // Handle the error appropriately, e.g., show an error message to the user
+    }
+}
+
+
 
 
 
 document.addEventListener('DOMContentLoaded', async function() {
+    getSession();
     const csrfToken = await getCsrfToken();
     const form = document.getElementById('messageForm');
     const titleInput = document.getElementById('title');
     const messageBodyInput = document.getElementById('messageBody');
     const submitButton = document.getElementById('SubmitPost');
-    let blog = JSON.parse(localStorage.getItem('blog'));
+    let blog = await getStoredBlog() ;
+    console.log(blog);
+    
+
+    
+    
 
 
     document.querySelector('.imageContainer').addEventListener('click', function() {
         window.location.href='http://localhost:8000/client/dashboard.html'; 
        
     });
-    document.querySelector('.logout').addEventListener('click', async function(e){
-       
-        e.preventDefault();
-        try {
-            const response = await fetch('http://localhost:3000/auth/logout', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'CSRF-Token': csrfToken
-                },
-            });
-    
-            if (!response.ok) {
-                throw new Error('Failed to log out: ' + response.status);
-            }
-            console.log(response.json);
-    
-            // If the logout was successful, redirect to the login page
-            window.location.href = 'http://localhost:8000/client/login.html'; 
-        } catch (error) {
-            console.error('Error during logout:', error);
-            // Handle the error appropriately, e.g., show an error message to the user
-        }
-    });
-    
+  
 
     // If a blog post exists, prefill the form with its data and change the button text to 'Update'
     if(blog !== null){
@@ -68,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         submitButton.textContent = 'Update';
     }
 
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', async function(event) {
         event.preventDefault();
         clearErrors();
         let isValid = true;
@@ -99,7 +140,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             // If a blog post exists, update it. Otherwise, create a new one.
             let url = 'http://localhost:3000/blog';
+           
             let method = 'POST';
+
+          
 
             if(blog !== null && blog.id !== null){
                 url += `/${blog.id}`;
@@ -124,11 +168,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                     showError('serverError', data.error);  // Display the error message on the UI
                 } else {
                     console.log('Success:', data);
+                    showNotification(`Blog ${method==='PUT'?'updated':'posted'}  succesfully`, 'success','http://localhost:8000/client/myblog.html');
+
                     window.location.href = 'http://localhost:8000/client/myblog.html'; 
 
                     // If a blog post was updated, remove it from the local storage
                     if(method === 'PUT'){
-                        localStorage.removeItem('blog');
+                        clearStoredBlog();
+                        //localStorage.removeItem('blog');
                     }
 
                     // Proceed with handling the successful response, e.g., redirect or update UI
@@ -154,6 +201,30 @@ document.addEventListener('DOMContentLoaded', async function() {
             div.style.display = 'none';
         });
     }
+
+    const showNotification = (message, type,location  ) => {
+        var notifier =
+          type === "success"
+            ? document.getElementById("success")
+            : document.getElementById("errorMessage");
+            notifier.textContent = message;
+            notifier.style.display = "block";
+      
+
+        setTimeout(function () {
+          notifier.style.display = "none";
+      
+          if (type === "success") {
+            window.location.href = location;
+            console.log
+          }
+          else if(type === "error") {
+            window.location.href = location;
+          }
+        }, 3000); 
+      };
+
+
 
 
 

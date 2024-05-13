@@ -2,6 +2,7 @@ const addUser='Insert into users (username  , email, password_hash) values ($1, 
 const getUserByEmail='Select * from users where email=$1';
 const checkEmailExists = 'SELECT 1 FROM users WHERE email = $1';
 const checkUsernameExists = 'SELECT 1 FROM users WHERE username = $1';
+const deleteUserByEmail='Delete from users where email=$1';
 
 const getUserById='Select * from users where id=$1';
 
@@ -30,5 +31,6 @@ module.exports={
   addNewBlog,
   updateBlog,
   deleteBlog,
-  getAllBlogs
+  getAllBlogs,
+  deleteUserByEmail
 };

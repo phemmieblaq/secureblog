@@ -18,10 +18,30 @@ async function getCsrfToken() {
     }
 }
 
+async function getSession() {
+    try {
+        const response = await fetch('http://localhost:3000/protected-route', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            showNotification('Session timed out. redirecting to login lage ','error','http://localhost:8000/client/login.html')
+        }
+
+        const data = await response.json();
+        return data
+    } catch (error) {
+        //console.log('Error during fetching protected route:', error);
+        // Handle the error appropriately, e.g., show an error message to the user
+    }
+}
+
 
 
 
 document.addEventListener('DOMContentLoaded', async function() {
+    getSession();
     const csrfToken = await getCsrfToken();
     document.querySelector('.logout').addEventListener('click', async function(e){
         e.preventDefault();
@@ -101,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     ${blog.title}
                 </p>
                 <p class="blogPost">
-                    ${blog.content}
+                    ${reduceString(blog.content)}
                 </p>
                 <div class="blogFooter">
                     <!-- You can add more footer content here if needed -->
@@ -109,15 +129,31 @@ document.addEventListener('DOMContentLoaded', async function() {
             `;
 
             card.dataset.blog = JSON.stringify(blog);
-            card.addEventListener('click', function(event) {
+            card.addEventListener('click',  async function(event) {
                 // Retrieve the blog object from the data attribute
                 var blog = JSON.parse(card.dataset.blog);
+                
+                let jsonBlog=JSON.stringify(blog)
+                console.log('clickedBlog', jsonBlog);
             
-                localStorage.setItem('blog', JSON.stringify(blog));
-            
-                // Navigate to the writeBlog page
-                window.location.href = 'detailsBlog.html'; 
-                console.log('a',blog);
+                const response = await fetch('http://localhost:3000/store-blog', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken
+                    },
+                    body: jsonBlog,
+                    credentials: 'include'   // Necessary to include cookies in the request
+                });
+        
+                const data = await response.json(); // Parse the JSON response
+                console.log(data);
+             
+                    // console.log('Success:', data.message);
+                    // Navigate to the writeBlog page
+                     window.location.href = "detailsBlog.html";
+
+                
             });
 
 
@@ -133,20 +169,40 @@ document.addEventListener('DOMContentLoaded', async function() {
             const searchTerm = event.target.value;
             populateOrFilterBlogs(searchTerm);
         });
-    } else {
-        // Create a card to inform the user that the search functionality is not available
-        const card = document.createElement('div');
-        card.className = 'innerCard';
-        card.innerHTML = `
-            <div class="userContainer">
-                <p class="profileUsername">
-                    Search functionality is not available.
-                </p>
-            </div>
-            <p class="blogTitle">
-                Please check your browser or contact support.
-            </p>
-        `;
-        container.appendChild(card);
-    }
+    } 
 });
+
+const showNotification = (message, type,location  ) => {
+    var notifier =
+      type === "success"
+        ? document.getElementById("success")
+        : document.getElementById("errorMessage");
+        notifier.textContent = message;
+        notifier.style.display = "block";
+  
+
+    setTimeout(function () {
+      notifier.style.display = "none";
+  
+      if (type === "success") {
+        window.location.href = location;
+        console.log
+      }
+      else if(type === "error") {
+        window.location.href = location;
+      }
+    }, 3000); 
+  };
+
+  const reduceString =(content) => {
+    // Check if the length of the string is greater than the maximum number
+    if (content.length > 30) {
+      // Return the substring from the beginning to the max length and add '...'
+      return content.substring(0, 30) + '...';
+    } else {
+      // Return the content as it is if it's shorter than the max length
+      return content;
+    }
+  }
+
+ 

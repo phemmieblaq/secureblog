@@ -114,27 +114,51 @@ document.addEventListener('DOMContentLoaded', async function() {
         clearErrors();
         let isValid = true;
 
-        // Validate title
+        function escapeHTML(text) {
+            let map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+        
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+        
         if (titleInput.value.trim() === '') {
             showError('titleError', 'Title is required.');
             isValid = false;
-        } 
-
+        } else {
+            let sanitizedTitle = escapeHTML(titleInput.value.trim());
+            if (sanitizedTitle !== titleInput.value.trim()) {
+                showError('titleError', 'Title contains potentially malicious script.');
+                isValid = false;
+            }
+        }
+        
         // Validate message body
         if (messageBodyInput.value.trim() === '') {
             showError('messageBodyError', 'Body of the message is required.');
             isValid = false;
-        } 
-
+        } else {
+            let sanitizedContent = escapeHTML(messageBodyInput.value.trim());
+            if (sanitizedContent !== messageBodyInput.value.trim()) {
+                showError('messageBodyError', 'Body of the message contains potentially malicious script.');
+                isValid = false;
+            }
+        }
+        
         if (!isValid) {
             event.preventDefault(); // Prevent form submission
         }
-
+        
         if (isValid) {
             const formData = {
-                title: titleInput.value.trim(),
-                content: messageBodyInput.value.trim()
+                title: escapeHTML(titleInput.value.trim()),
+                content: escapeHTML(messageBodyInput.value.trim())
             };
+        
 
             console.log('Form Data:', formData); // Data to be sent
 

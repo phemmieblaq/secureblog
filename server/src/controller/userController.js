@@ -201,7 +201,7 @@ const loginUser = async (req, res) => {
 const verifyOTP = async (req, res) => {
   const { otp } = req.body;
   console.log("Received OTP:", req.body.otp);
-  console.log("Expected OTP:", req.session.otp);
+  console.log("Expected OTP:", req.session.otp);  
   const otpExpired = new Date() > new Date(req.session.otp.expiresAt);
 
   if (req.session.otp.otp === otp && !otpExpired) {
@@ -222,7 +222,7 @@ const verifyOTP = async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: false, // Set to true if served over HTTPS
-      maxAge: 3600000, // 1 hour
+      maxAge: 3600000, // 1 hour  //60,000 milliseconds = 1 minute
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,

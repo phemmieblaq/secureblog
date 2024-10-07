@@ -1,0 +1,264 @@
+html {
+    box-sizing: border-box;
+    font-family: Familjen Grotesk;
+    background-color:  #FAFAFA;
+  }
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+    
+  }
+  a {
+    text-decoration: none;
+    color:#FF4F03;
+}
+
+body {
+  
+    max-width:100%;
+    width:100%;
+    min-height: 100vh;
+    display:flex;
+    flex-direction: column;
+   
+     overflow-x: hidden;
+    
+   
+}
+
+.header{
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 24px 80px;
+    margin-bottom: 80px;
+    
+    
+}
+.subHeader{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+}
+
+.search {
+   max-width:400px;
+   width:100%;
+    padding-left: 16px;
+    padding-block: 8px;
+   
+    background: #F6F5F5;
+
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:8px;
+    border-radius: 8px;
+  
+   
+  }
+  
+  .search input {
+    flex: 1;
+    border: none;
+    font-size: 15px;
+    
+    font-weight: 400;
+    
+  
+    outline: none;
+    color: #a1a1a1;
+    background: #F6F5F5;
+    
+  }
+  
+  .search img {
+    width: 16px;
+    height:16px;
+    cursor: pointer;
+  }
+  .blogWrapper{
+    display: flex;
+    max-width: 200px;
+    width: 100%;
+   
+    justify-content:space-between;
+    
+    
+    
+  }
+
+  .blogCardContainer{
+    width: 100%;
+    padding-inline: 80px;
+    margin-bottom: 40px;
+   
+
+  }
+  .mainHeading{
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap:16px;
+    margin-bottom: 40px;
+  }
+  .details{
+        font-size: 18px;
+        font-weight: 400;
+        color: #363434;
+  }
+  .blogHeading{
+    color: #1A1A1A;
+    font-size: 44px;
+   
+  }
+  .blogPostCard{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: space-between;
+    align-items: center;
+    gap:20px;
+
+  }
+  .innerCard{
+    max-width: 625px;
+    width:100%; 
+   padding :16px 12px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap:12px;
+    box-shadow: 0px 10px 10px -5px #5a5c5e0a;
+ 
+    /* border:1px solid red; */
+    
+
+  }
+
+  .userContainer{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+   
+
+  
+  }
+
+.profile{
+  width:48px;
+  height:48px;
+  border-radius: 50%;
+  background-color: #41B0EF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileinitial{
+  color: #FFFFFF;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 19.36px;
+}
+.profileUsername{
+  color: #1A1A1A;
+  font-size: 16px;
+  font-weight: 500;
+}
+.blogTitle{
+  width: 100%;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1A1A1A;
+  line-height: 29.05px;
+
+}
+.blogPost{
+  width: 100%;
+  font-size: 16px;
+  font-weight: 400;
+  color: #363434;
+  line-height: 19.36pxpx;
+
+}
+
+.logo {
+  max-width: 100px; 
+  height: auto;
+  margin-bottom: 10px; 
+}
+footer {
+  background-color: #f8f9fa;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-content p {
+  margin-bottom: 10px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  display: inline;
+  margin-right: 10px;
+}
+
+.footer-links li:last-child {
+  margin-right: 0;
+}
+
+.footer-links li a {
+  color: #333;
+  text-decoration: none;
+}
+
+.footer-links li a:hover {
+  text-decoration: underline;
+}
+
+.success{
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(40, 38, 38, 0.1);
+  z-index: 9999;
+}
+.errorMessage {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: red;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(40, 38, 38, 0.1);
+  z-index: 9999;
+}

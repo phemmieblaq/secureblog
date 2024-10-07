@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="writeblog.css">
+</head>
+<body>
+    <div id="success" class="success"></div>
+    <div id="errorMessage" class="errorMessage"></div>
+    <div class="bodylogo">
+        <div class="header">
+     <div class="subHeader">
+        <div class="imageContainer">
+            <img src="./images/logo.svg" alt="">
+                
+        </div>
+
+                          <div class="blogWrapper">
+                            <p class="myblog"><a href="myblog.html">Your stories</a> </p>
+
+                            <!-- <p class="accountDeletion"> <a href="">Delete my accout</a> </p> -->
+                        </div>
+            </div>
+        
+        </div>
+
+        <div class="regContainer">
+            <div class="textSignup">
+                <div class="loginSub">
+                <h2 class="login">
+               Post A Blog
+                </h2>
+            
+            </div>
+    
+            
+        <form id="messageForm">
+            
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" >
+            <div class="error" id="titleError"></div>
+            
+            <label for="messageBody">Message Body:</label>
+            <textarea type="text" id="messageBody" name="messageBody" >
+
+            </textarea>
+            <div class="error" id="messageBodyError"></div>
+            
+    
+            
+            
+            <button id="SubmitPost" type="submit">Send</button>
+            <div class="error" id="serverError"></div>
+        </form>
+        
+    </div>
+    </div>
+    </div>
+   
+    </div>
+    <div class="footer">
+
+    </div>
+    <script src="writeblog.js"></script>
+   </body>
+</html>

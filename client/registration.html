@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="registration.css">
+    
+    
+</head>
+<body>
+   
+    <div id="success" class="success"></div>
+    <div id="errorMessage" class="errorMessage"></div>
+    <div class="bodylogo">
+        <div class="imageContainer">
+            <img src="./images/logo.svg" alt="">
+                
+        </div>
+
+    <div class="regContainer">
+        <div class="textSignup">
+            <div class="registerSub">
+            <h2 class="register">
+                Create an account
+            </h2>
+        
+        </div>
+
+        
+    <form id="registrationForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" >
+        <div class="error" id="usernameError"></div>
+
+
+       
+        
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" >
+        <div class="error" id="emailError"></div>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" >
+        <div class="error" id="passwordError"></div>
+
+      
+        <label for="captcha">Solve this problem: <span id="mathQuestion"></span></label>
+        <input type="text" id="captcha" name="captcha" >
+        <div class="error" id="captchaError"></div>
+
+        <button type="submit">Register</button>
+        <div class="error" id="serverError"></div>
+    </form> 
+
+    <div class="privacyContainer">
+        <p>By creating an account , you agree to Readdy's <a href="privacy.html">Privacy Policy </a> & <a href="termsOfService.html"> Term of use .</a> </p>
+    </div>
+
+    <div class="altContainer">
+        <p>Already have an account? <a href="login.html">Sign in</a></p>
+    </div>
+</div>
+</div>
+  
+</div>
+<script src="registration.js"></script>
+</body>
+</html>
